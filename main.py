@@ -1,10 +1,11 @@
+import os
 import random
 import sched
 import time
 
 import telebot
 
-bot = telebot.TeleBot('1768619317:AAHyDzzg9OE19_htVeV7fbyMrBls5HgE_k8')
+bot = telebot.TeleBot(os.environ.get('TOKEN'))
 startKeyboard = telebot.types.ReplyKeyboardMarkup(resize_keyboard=1)
 startKeyboard.row('Каждый час')
 continueKeyboard = telebot.types.ReplyKeyboardMarkup(resize_keyboard=1)

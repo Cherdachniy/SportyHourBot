@@ -4,19 +4,22 @@ import sched
 import time
 
 import telebot
+from flask import Flask, request
 
 bot = telebot.TeleBot(os.environ.get('TOKEN'))
-startKeyboard = telebot.types.ReplyKeyboardMarkup(resize_keyboard=1)
-startKeyboard.row('Каждый час')
-continueKeyboard = telebot.types.ReplyKeyboardMarkup(resize_keyboard=1)
-continueKeyboard.row('Продолжим')
-s = sched.scheduler(time.time, time.sleep)
+bot.set_webhook(url=os.environ.get('WEBHOOK_URL'))
 
 trainings = {
     0: 'отжимайся 💪',
     1: 'приседай 🦵',
     2: 'пресс качай 🙆‍♂️'
 }
+
+startKeyboard = telebot.types.ReplyKeyboardMarkup(resize_keyboard=1)
+startKeyboard.row('Каждый час')
+continueKeyboard = telebot.types.ReplyKeyboardMarkup(resize_keyboard=1)
+continueKeyboard.row('Продолжим')
+s = sched.scheduler(time.time, time.sleep)
 
 
 def random_training(obj):
@@ -32,6 +35,17 @@ def run_task(fn, **kwargs):
     s.run()
 
 
+app = Flask(__name__)
+
+
+@app.route('/', methods=["POST"])
+def webhook():
+    bot.process_new_updates(
+        [telebot.types.Update.de_json(request.stream.read().decode("utf-8"))]
+    )
+    return "ok"
+
+
 @bot.message_handler(commands=['start'])
 def start_message(message):
     bot.send_message(message.chat.id, 'Погнали!', reply_markup=startKeyboard)
@@ -45,4 +59,5 @@ def send_text(message):
         run_task(send_message, chat_id=message.chat.id)
 
 
-bot.polling()
+if __name__ == "__main__":
+    app.run()

@@ -45,6 +45,10 @@ def webhook():
     )
     return "ok"
 
+@app.route('/', methods=["GET"])
+def index():
+    with open('index.html', encoding='utf-8') as file:
+        return file.read()
 
 @bot.message_handler(commands=['start'])
 def start_message(message):

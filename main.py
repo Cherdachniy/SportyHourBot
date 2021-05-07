@@ -60,4 +60,4 @@ def send_text(message):
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(port=os.environ.get('PORT'))
